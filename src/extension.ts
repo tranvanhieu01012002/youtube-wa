@@ -19,8 +19,12 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Hello World from youtube-wa!');
 	});
 
-	context.subscriptions.push(disposable);
+	let start = vscode.commands.registerCommand('youtube-wa.test-app', () => {
+		vscode.window.showInformationMessage('Chay dc r nha thang l!');
+
+	})
+	context.subscriptions.push(disposable, start);
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }

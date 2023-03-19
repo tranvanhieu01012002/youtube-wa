@@ -16,8 +16,29 @@
       {
         "command": "youtube-wa.helloWorld",
         "title": "alo ae"
+      },
+      {
+        "command": "youtube-wa.test-app",
+        "title": "start code"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "youtube-wa-active-bar",
+          "title": "Youtube-wa",
+          "icon": "./src/assets/image/favicon.svg"
+        }
+      ]
+    },
+    "views": {
+      "youtube-wa-active-bar": [
+        {
+          "id": "youtube-wa-primary-bar",
+          "name": "youtube"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
