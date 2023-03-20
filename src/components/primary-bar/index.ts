@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-
+import { get } from '../../http/axios';
 class WatchViewProvider implements vscode.WebviewViewProvider {
 
     private _view?: vscode.WebviewView;
@@ -14,7 +14,7 @@ class WatchViewProvider implements vscode.WebviewViewProvider {
         context: vscode.WebviewViewResolveContext<unknown>,
         token: vscode.CancellationToken): void | Thenable<void> {
 
-        webviewView.webview.html = this.showHtml(webviewView.webview);
+        this.showHtml(webviewView.webview).then(res => webviewView.webview.html = res);
 
         webviewView.webview.options = {
             enableScripts: true,
@@ -30,43 +30,37 @@ class WatchViewProvider implements vscode.WebviewViewProvider {
 
     }
 
-    public showHtml(webview: vscode.Webview): string {
+    public async showHtml(webview: vscode.Webview): Promise<string> {
         const style = this.getStyle(webview);
         const nonce = getNonce();
+
+        const data = await get();
+
+
         // <meta
         // http-equiv="Content-Security-Policy"
         // content="
-        // default-src 'none';
+        // default-src 'none';webviewView.webview.html
         // media-src
         // img-src ${webview.cspSource} https:;
         // frame-src ${webview.cspSource} https:;
         // script-src 'nonce-${nonce}';
         // style-src ${webview.cspSource} https:;"
         // />
-        return `
-        <!DOCTYPE html>
+        return `<!DOCTYPE html>
 			<html lang="en">
                 <head>
-              
                     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
                     <title>Watch video</title>
                     <link href="${style}" rel="stylesheet">
                 </head>
                 <body>
                     <button id="btn" class="add-color-button">Open it now</button>
-                    <img width="300"  src="https://bedental.vn/wp-content/uploads/2022/11/f99a5cc9ebcceba1dd49af0d509732dc.jpg"/>
-                    <iframe 
-                        src="https://www.youtube.com/embed/VHjMJeLsI0o"
-                        id="inlineFrameExample1"
-                        title="Inline Frame Example1"
-                        sandbox="allow-forms allow-scripts allow-pointer-lock allow-same-origin allow-top-navigation allow-presentation"  
-                        allowfullscreen 
-                        width="300" 
-                        height="250" 
-                        >
-                    </iframe>
+                    <div id="container"></div>
+                    ${renderImage(data.data)}
                     <script nonce="${nonce}">
                         console.log('3333');
+                        console.log('222');
                     </script>
                 </body>
 
@@ -82,4 +76,17 @@ function getNonce() {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
+}
+
+function renderImage(arr: Image[]): string {
+    let images = "";
+    arr.forEach(element => {
+        images += ` <img width="300" src="${element.image}"/>`;
+    });
+    return images;
+}
+
+interface Image {
+    image: string,
+    id: number
 }
