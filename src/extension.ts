@@ -1,7 +1,10 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
 
+// example webview https://github.com/microsoft/vscode-extension-samples/tree/main/webview-view-sample
+
+import * as vscode from 'vscode';
+import WatchViewProvider from './components/primary-bar';
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -22,8 +25,14 @@ export function activate(context: vscode.ExtensionContext) {
 	let start = vscode.commands.registerCommand('youtube-wa.test-app', () => {
 		vscode.window.showInformationMessage('Chay dc r nha thang l!');
 
-	})
+	});
+
+	let watch = new WatchViewProvider(context.extensionUri);
+
+	// const view = vscode.window.
 	context.subscriptions.push(disposable, start);
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider(WatchViewProvider.viewType, watch));
+	
 }
 
 // This method is called when your extension is deactivated
