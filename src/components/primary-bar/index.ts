@@ -27,47 +27,49 @@ class WatchViewProvider implements vscode.WebviewViewProvider {
 
     protected getStyle(webview: vscode.Webview): vscode.Uri {
         return webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'src/assets/style', 'index.css'));
+    }
+
+    protected getScript(webview: vscode.Webview): vscode.Uri {
+        return webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'src/assets/ts', 'index.js'));
 
     }
 
     public async showHtml(webview: vscode.Webview): Promise<string> {
         const style = this.getStyle(webview);
+        const script = this.getScript(webview);
         const nonce = getNonce();
-
         const data = await get();
 
-
-        // <meta
-        // http-equiv="Content-Security-Policy"
-        // content="
-        // default-src 'none';webviewView.webview.html
-        // media-src
-        // img-src ${webview.cspSource} https:;
-        // frame-src ${webview.cspSource} https:;
-        // script-src 'nonce-${nonce}';
-        // style-src ${webview.cspSource} https:;"
-        // />
         return `<!DOCTYPE html>
 			<html lang="en">
                 <head>
                     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
                     <title>Watch video</title>
+                    <link href="
+https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css
+" rel="stylesheet">
                     <link href="${style}" rel="stylesheet">
                 </head>
                 <body>
-                    <button id="btn" class="add-color-button">Open it now</button>
                     <div id="container"></div>
-                    ${renderImage(data.data)}
-                    <script nonce="${nonce}">
-                        console.log('3333');
-                        console.log('222');
-                    </script>
+                    <div class="slider-container">
+                
+                   ${renderImage(data.data)}
+                
+                    <!-- Slider Next and Previous buttons -->
+                    <a class="prev" onclick="plusIndex(-1)">❮</a>
+                    <a class="next" onclick="plusIndex(+1)">❯</a>
+                
+                </div>
+                 
+                    <script nonce="${nonce}" src="${script}"></script>
                 </body>
 
 			</html>
         `;
     }
 }
+// ${renderImage(data.data)}
 export default WatchViewProvider;
 function getNonce() {
     let text = '';
@@ -81,7 +83,13 @@ function getNonce() {
 function renderImage(arr: Image[]): string {
     let images = "";
     arr.forEach(element => {
-        images += ` <img width="300" src="${element.image}"/>`;
+        images += ` 
+        <div class="slides fade">
+            <div class="slider-image">
+                <img  src="${element.image}" class="img-girl">
+            </div>
+        </div> 
+        `;
     });
     return images;
 }
@@ -90,3 +98,13 @@ interface Image {
     image: string,
     id: number
 }
+
+// example render image
+
+// <div class="slides fade">
+// <div class="slider-numbers">4/4</div>
+// <div class="slider-image">
+//     <img  src="${element.image}" class="img-girl">
+// </div>
+// <div class="slider-caption">Caption 4</div>
+// </div> 
